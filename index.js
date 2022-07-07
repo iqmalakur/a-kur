@@ -15,12 +15,24 @@ app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
 app.use(
     session({
+        cookie: {
+            // secure: true,
+            maxAge: 60000,
+        },
+        store: new RedisStore(),
         secret: 'akur',
-        resave: false,
         saveUninitialized: true,
-        cookie: { maxAge: 60000 },
+        resave: false,
     })
 )
+// app.use(
+//     session({
+//         secret: 'akur',
+//         resave: false,
+//         saveUninitialized: true,
+//         cookie: { maxAge: 60000 },
+//     })
+// )
 app.use(methodOverride('_method'))
 
 app.get('/', async (req, res) => {
