@@ -1,6 +1,6 @@
 <%- include('./layouts/header') %>
 
-<main class="container">
+<main class="container my-5">
     <h1 class="text-center my-5">Short Your URL</h1>
 
     <% if (user) { %>
@@ -19,15 +19,20 @@
             <tr>
                 <th scope="row"><%= ++i %></th>
                 <td><a href="<%= link.original %>"><%= link.original %></a></td>
-                <td><a href="<%= `http://localhost:3000/${link.short}` %>"><%= `http://localhost:3000/${link.short}` %></a></td>
-                <td>@mdo</td>
+                <td><a href="<%= `http://a-kur.herokuapp.com/${link.short}` %>"><%= `http://a-kur.herokuapp.com/${link.short}` %></a></td>
+                <td>
+                    <form action="/deleteLink?_method=DELETE" method="post">
+                        <input type="hidden" name="link" value="<%= link.original %>" />
+                        <button type="submit" class="nav-link btn btn-danger text-light">Delete</button>
+                    </form>
+                </td>
             </tr>
             <% }) %>
         </tbody>
     </table>
     <% } %>
 
-    <h2>Short URL</h2>
+    <h2 class="mt-5">Short URL</h2>
     <% if (!user) { %>
     <div class="alert alert-danger" role="alert">Anda harus login terlebih dahulu!</div>
     <% } %>
@@ -38,7 +43,7 @@
         </div>
         <label for="short" class="form-label">Short Link</label>
         <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon3">http://akur-link.herokuapp.com/</span>
+            <span class="input-group-text" id="basic-addon3">http://a-kur.herokuapp.com/</span>
             <input type="text" class="form-control" id="short" name="short" required <%= user ? '' : 'disabled' %> />
         </div>
         <button type="submit" class="btn btn-success <%= user ? '' : 'disabled' %>">Short your link now</button>

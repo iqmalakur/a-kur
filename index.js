@@ -85,7 +85,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/register', async (req, res) => {
     const User = await Users.findOne({ username: req.body.username })
-    if (user) {
+    if (User) {
         res.redirect('/register')
     } else {
         await Users.insertMany({
@@ -102,7 +102,7 @@ app.post('/addLink', async (req, res) => {
 
     const LinkExist = await Links.findOne({ short })
 
-    if (!LinkExist) {
+    if (!LinkExist && short !== 'login' && short !== 'register') {
         const Link = new Links({ ...req.body, short })
         const User = req.session.user
 
@@ -118,6 +118,16 @@ app.delete('/logout', (req, res) => {
     res.redirect('/')
 })
 
+app.delete('/deleteLink', async (req, res) => {
+    const Link = await Links.findOneAndDelete({ original: req.body.link })
+    const UserLinks = req.session.user.links.filter((l) => l != Link._id.toString())
+    const User = await Users.findOneAndUpdate({ username: req.session.user.username, password: req.session.user.password }, { links: UserLinks })
+
+    req.session.user = User
+
+    res.redirect('/')
+})
+
 app.listen(port, () => {
-    console.log(`Server berjalan pada http://localhost:${port}`)
+    console.log(`Server berjalan pada http://a-kur.herokuapp.com${port}`)
 })
