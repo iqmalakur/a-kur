@@ -1,5 +1,48 @@
 <%- include('./layouts/header') %>
 
-<h1><%= user ? `Hello ${user.name}` : 'Halaman Home' %></h1>
+<main class="container">
+    <h1 class="text-center my-5">Short Your URL</h1>
+
+    <% if (user) { %>
+    <h2>My URLs</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Original Link</th>
+                <th scope="col">Short Link</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% links.forEach((link, i) => { %>
+            <tr>
+                <th scope="row"><%= ++i %></th>
+                <td><a href="<%= link.original %>"><%= link.original %></a></td>
+                <td><a href="<%= `http://localhost:3000/${link.short}` %>"><%= `http://localhost:3000/${link.short}` %></a></td>
+                <td>@mdo</td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <% } %>
+
+    <h2>Short URL</h2>
+    <% if (!user) { %>
+    <div class="alert alert-danger" role="alert">Anda harus login terlebih dahulu!</div>
+    <% } %>
+    <form action="/addLink" method="post">
+        <div class="mb-3">
+            <label for="original" class="form-label">Your Link</label>
+            <input type="url" class="form-control" id="original" name="original" required <%= user ? '' : 'disabled' %> />
+        </div>
+        <label for="short" class="form-label">Short Link</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon3">http://akur-link.herokuapp.com/</span>
+            <input type="text" class="form-control" id="short" name="short" required <%= user ? '' : 'disabled' %> />
+        </div>
+        <button type="submit" class="btn btn-success <%= user ? '' : 'disabled' %>">Short your link now</button>
+    </form>
+</main>
 
 <%- include('./layouts/footer') %>

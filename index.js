@@ -4,6 +4,7 @@ const methodOverride = require('method-override')
 
 require('./utils/db')
 const Users = require('./models/user')
+const Links = require('./models/link')
 
 const app = express()
 const port = 3000
@@ -23,10 +24,15 @@ app.use(
 app.use(methodOverride('_method'))
 
 app.get('/', async (req, res) => {
+    const User = req.session.login ? await Users.findOne({ username: req.session.user.username, password: req.session.user.password }) : false
+    let UserLinks = await Links.find()
+    UserLinks = User ? UserLinks.filter((Link) => User.links.includes(Link._id.toString())) : []
+
     res.render('home', {
         title: 'AKUR Shortener Link',
         active: 'home',
-        user: req.session.login ? req.session.user : false,
+        user: User,
+        links: UserLinks,
     })
 })
 
@@ -56,6 +62,11 @@ app.get('/register', async (req, res) => {
     }
 })
 
+app.get('/:link', async (req, res) => {
+    const link = await Links.findOne({ short: req.params.link })
+    if (link) res.redirect(link.original)
+})
+
 app.post('/login', async (req, res) => {
     const user = await Users.findOne({ ...req.body })
     if (user) {
@@ -73,11 +84,33 @@ app.post('/login', async (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-    await Users.insertMany({
-        ...req.body,
-        links: [],
-    })
-    res.redirect('/login')
+    const User = await Users.findOne({ username: req.body.username })
+    if (user) {
+        res.redirect('/register')
+    } else {
+        await Users.insertMany({
+            ...req.body,
+            links: [],
+        })
+        res.redirect('/login')
+    }
+})
+
+app.post('/addLink', async (req, res) => {
+    let { short } = req.body
+    short = short.replace(/htt(p|ps):\/\//, '')
+
+    const LinkExist = await Links.findOne({ short })
+
+    if (!LinkExist) {
+        const Link = new Links({ ...req.body, short })
+        const User = req.session.user
+
+        Link.save()
+        await Users.updateOne(User, { links: [...User.links, Link._id] })
+    }
+
+    res.redirect('/')
 })
 
 app.delete('/logout', (req, res) => {
