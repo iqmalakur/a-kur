@@ -1,5 +1,5 @@
 <%- include('./layouts/header') %>
 
-<h1>Halaman Home</h1>
+<h1><%= user ? `Hello ${user.name}` : 'Halaman Home' %></h1>
 
 <%- include('./layouts/footer') %>

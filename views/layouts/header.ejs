@@ -18,13 +18,23 @@
                         <li class="nav-item">
                             <a class="nav-link <%= active == 'home' ? 'active' : '' %>" href="/">Home</a>
                         </li>
+                        <% if (!user) { %>
                         <li class="nav-item">
                             <a class="nav-link <%= active == 'login' ? 'active' : '' %>" href="/login">Login</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <%= active == 'register' ? 'active' : '' %>" href="/register">Register</a>
                         </li>
+                        <% } else{ %>
+                        <li class="nav-item">
+                            <form action="/logout?_method=DELETE" method="post">
+                                <button type="submit" class="nav-link btn btn-danger text-light" href="/register">Logout</button>
+                            </form>
+                        </li>
+                        <% } %>
                     </ul>
                 </div>
             </div>
         </nav>
+    </body>
+</html>
